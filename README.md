@@ -170,6 +170,7 @@ secret manager.
 | `INFOBLOX_PORTAL_KEY` | required | Portal API key with DNS data read and write access to the view |
 | `INFOBLOX_PORTAL_URL` | `https://csp.infoblox.com` | Portal base URL |
 | `UDDI_VIEW` | `default` | DNS view name. The webhook resolves it to an ID at startup. |
+| `UDDI_VIEW_ID` | empty | DNS view resource ID, such as `dns/view/<uuid>`. Replaces the `UDDI_VIEW` lookup when the API key cannot list views. |
 | `UDDI_ZONE_FILTER` | empty | Comma-separated zone FQDNs that the webhook may list and write |
 | `UDDI_ZONE_CACHE_TTL` | `5m` | How long the webhook caches the zone list |
 | `UDDI_PAGE_LIMIT` | `1000` | Page size for Portal list requests, from 1 through 10000 |

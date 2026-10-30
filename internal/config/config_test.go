@@ -54,6 +54,7 @@ func TestLoadOverrides(t *testing.T) {
 	environ["LOG_FORMAT"] = "text"
 	environ["INFOBLOX_PORTAL_URL"] = "https://portal.example.net/"
 	environ["UDDI_VIEW"] = "lab"
+	environ["UDDI_VIEW_ID"] = "dns/view/lab"
 	environ["UDDI_ZONE_CACHE_TTL"] = "30s"
 	environ["UDDI_PAGE_LIMIT"] = "50"
 	environ["UDDI_DEFAULT_TTL"] = "300"
@@ -68,6 +69,7 @@ func TestLoadOverrides(t *testing.T) {
 	assert.Equal(t, []string{"example.com", " example.org"}, cfg.IncludeDomains)
 	assert.True(t, cfg.DryRun)
 	assert.Equal(t, "lab", cfg.View)
+	assert.Equal(t, "dns/view/lab", cfg.ViewID)
 	assert.Equal(t, 30*time.Second, cfg.ZoneCacheTTL)
 	assert.Equal(t, 50, cfg.PageLimit)
 	assert.Equal(t, int64(300), cfg.DefaultTTL)
@@ -111,6 +113,7 @@ func TestValidate(t *testing.T) {
 		{"relative url", func(c *Config) { c.PortalURL = "csp.infoblox.com" }, "INFOBLOX_PORTAL_URL"},
 		{"bad scheme", func(c *Config) { c.PortalURL = "ftp://csp.infoblox.com" }, "INFOBLOX_PORTAL_URL"},
 		{"empty view", func(c *Config) { c.View = "" }, "UDDI_VIEW"},
+		{"bad view id", func(c *Config) { c.ViewID = "lab" }, "UDDI_VIEW_ID"},
 		{"negative cache ttl", func(c *Config) { c.ZoneCacheTTL = -1 }, "UDDI_ZONE_CACHE_TTL"},
 		{"page limit low", func(c *Config) { c.PageLimit = 0 }, "UDDI_PAGE_LIMIT"},
 		{"page limit high", func(c *Config) { c.PageLimit = 10001 }, "UDDI_PAGE_LIMIT"},

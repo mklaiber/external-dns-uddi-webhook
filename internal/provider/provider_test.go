@@ -101,6 +101,13 @@ func TestNew(t *testing.T) {
 		assert.False(t, df.IsConfigured())
 		assert.True(t, df.Match("anything"))
 	})
+	t.Run("view id skips lookup", func(t *testing.T) {
+		fake := uddi.NewFake()
+		p, err := New(context.Background(), Config{Client: fake, ViewID: "dns/view/direct"})
+		require.NoError(t, err)
+		assert.Equal(t, "dns/view/direct", p.ViewID())
+		assert.Empty(t, fake.CallsTo("ResolveView"))
+	})
 }
 
 func TestRecords(t *testing.T) {

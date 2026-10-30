@@ -23,7 +23,9 @@ import (
 type Config struct {
 	Client uddi.Client
 	// View is the DNS view name to manage.
-	View         string
+	View string
+	// ViewID is the DNS view resource ID. When set, View is not resolved.
+	ViewID       string
 	DomainFilter *endpoint.DomainFilter
 	DryRun       bool
 	// DefaultTTL applies to endpoints without a TTL. Zero uses the zone default.
@@ -82,9 +84,13 @@ func New(ctx context.Context, cfg Config) (*Provider, error) {
 	if cfg.DomainFilter == nil {
 		cfg.DomainFilter = endpoint.NewDomainFilter(nil)
 	}
-	viewID, err := cfg.Client.ResolveView(ctx, cfg.View)
-	if err != nil {
-		return nil, fmt.Errorf("resolve view %q: %w", cfg.View, err)
+	viewID := cfg.ViewID
+	if viewID == "" {
+		var err error
+		viewID, err = cfg.Client.ResolveView(ctx, cfg.View)
+		if err != nil {
+			return nil, fmt.Errorf("resolve view %q: %w", cfg.View, err)
+		}
 	}
 	p := &Provider{
 		client:  cfg.Client,

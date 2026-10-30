@@ -44,6 +44,8 @@ type Config struct {
 
 	// View is the DNS view name. The provider resolves it to a resource ID at startup.
 	View string `env:"UDDI_VIEW" envDefault:"default"`
+	// ViewID is the DNS view resource ID. When set, the provider skips the name lookup.
+	ViewID string `env:"UDDI_VIEW_ID"`
 	// ZoneFilter restricts managed authoritative zones by FQDN.
 	// Empty means every zone in the view that the domain filter allows.
 	ZoneFilter    []string      `env:"UDDI_ZONE_FILTER"`
@@ -126,6 +128,9 @@ func (c *Config) validateUDDI() []error {
 	}
 	if c.View == "" {
 		errs = append(errs, errors.New("UDDI_VIEW must not be empty"))
+	}
+	if c.ViewID != "" && !strings.HasPrefix(c.ViewID, "dns/view/") {
+		errs = append(errs, fmt.Errorf("UDDI_VIEW_ID %q must start with dns/view/", c.ViewID))
 	}
 	if c.ZoneCacheTTL < 0 {
 		errs = append(errs, errors.New("UDDI_ZONE_CACHE_TTL must not be negative"))
@@ -250,8 +255,8 @@ func (c *Config) Logger(w io.Writer) *slog.Logger {
 
 // String renders the configuration with the API key redacted.
 func (c *Config) String() string {
-	return fmt.Sprintf("server=%s healthz=%s portal_url=%s portal_key=%s view=%s dry_run=%t domain_filter=%v exclude=%v regex=%q regex_exclusion=%q zone_cache_ttl=%s page_limit=%d default_ttl=%d tags=%v",
-		c.ServerAddr(), c.HealthzAddr(), c.PortalURL, c.keyState(), c.View, c.DryRun,
+	return fmt.Sprintf("server=%s healthz=%s portal_url=%s portal_key=%s view=%s view_id=%s dry_run=%t domain_filter=%v exclude=%v regex=%q regex_exclusion=%q zone_cache_ttl=%s page_limit=%d default_ttl=%d tags=%v",
+		c.ServerAddr(), c.HealthzAddr(), c.PortalURL, c.keyState(), c.View, c.ViewID, c.DryRun,
 		c.IncludeDomains, c.ExcludeDomains, c.RegexDomainFilter, c.RegexDomainFilterExclusion,
 		c.ZoneCacheTTL, c.PageLimit, c.DefaultTTL, c.RawTags)
 }
@@ -266,6 +271,7 @@ func (c *Config) LogValue() slog.Value {
 		slog.String("portal_url", c.PortalURL),
 		slog.String("portal_key", c.keyState()),
 		slog.String("view", c.View),
+		slog.String("view_id", c.ViewID),
 		slog.Bool("dry_run", c.DryRun),
 		slog.Any("domain_filter", c.IncludeDomains),
 		slog.Any("exclude_domain_filter", c.ExcludeDomains),

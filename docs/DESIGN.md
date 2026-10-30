@@ -17,10 +17,10 @@ ExternalDNS version and avoids a second implementation in this repository.
 
 ## Zone and record mapping
 
-The provider resolves `UDDI_VIEW` to a resource ID at startup. It lists the
-view's `cloud` primary authoritative zones and keeps only zones allowed by both
-the domain filter and `UDDI_ZONE_FILTER`. The provider caches this list for
-`UDDI_ZONE_CACHE_TTL`.
+The provider resolves `UDDI_VIEW` to a resource ID at startup, unless
+`UDDI_VIEW_ID` sets the ID directly. It lists the view's `cloud` primary
+authoritative zones and keeps only zones allowed by both the domain filter and
+`UDDI_ZONE_FILTER`. The provider caches this list for `UDDI_ZONE_CACHE_TTL`.
 
 For each endpoint, the longest matching zone suffix selects the UDDI zone. One
 ExternalDNS endpoint can contain several targets, while one UDDI object stores

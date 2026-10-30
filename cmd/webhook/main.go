@@ -52,6 +52,7 @@ func run(ctx context.Context, environ map[string]string, out io.Writer) error {
 	p, err := provider.New(ctx, provider.Config{
 		Client:        client,
 		View:          cfg.View,
+		ViewID:        cfg.ViewID,
 		DomainFilter:  cfg.DomainFilter(),
 		DryRun:        cfg.DryRun,
 		DefaultTTL:    cfg.DefaultTTL,
